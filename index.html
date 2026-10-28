@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tareas del Equipo</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tareas">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f3f5f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1715" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#17302b; --muted:#5d716c; --line:#d6dedb;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-soft:#dcefea;
+  --warn:#b45f06; --warn-soft:#fbecd9; --done:#7d8f8a; --danger:#b3261e;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0f1715; --surface:#17211f; --ink:#e4ece9; --muted:#93a6a1; --line:#2a3734;
+  --accent:#3fb39d; --accent-ink:#06201b; --accent-soft:#16332d;
+  --warn:#f0a44b; --warn-soft:#33261a; --done:#6f817c; --danger:#ff8a80; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-weight:800;font-size:1.9rem;line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:.9rem;margin-top:4px;text-transform:capitalize}
+.soy{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.soy select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0}
+.linkbtn{background:none;border:none;color:var(--accent);font-weight:600;padding:4px;font-size:.85rem}
+
+.aviso{background:var(--accent-soft);border:1px solid var(--accent);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.aviso p{margin:0;font-size:.92rem}
+.aviso ol{margin:0;padding-left:20px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.aviso .row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--accent);color:var(--accent-ink);border:none;border-radius:10px;padding:10px 16px;font-weight:600}
+.btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.aviso.ok{background:var(--surface);border-color:var(--line)}
+
+.days{display:flex;align-items:center;gap:6px}
+.days .nav{flex:none;width:36px;height:56px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:1.1rem}
+.strip{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;min-width:0}
+.day{border:1px solid transparent;background:none;border-radius:10px;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.day .dow{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.day .num{font-family:var(--f-display);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.day .dot{height:6px;width:6px;border-radius:50%;background:transparent}
+.day .dot.p{background:var(--warn)} .day .dot.ok{background:var(--accent)}
+.day.today .num{color:var(--accent)}
+.day.sel{background:var(--surface);border-color:var(--line)}
+.day.sel .num{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.count{font-variant-numeric:tabular-nums;font-size:.9rem;color:var(--muted);white-space:nowrap}
+
+form.add{display:grid;grid-template-columns:1fr auto auto;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px}
+form.add input{border:none;background:none;padding:10px 8px;min-width:0;outline:none;font-size:1rem}
+form.add select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:0 6px;max-width:130px}
+form.add button{background:var(--accent);color:var(--accent-ink);border:none;border-radius:10px;padding:0 16px;font-weight:600}
+@media (max-width:420px){form.add{grid-template-columns:1fr auto}form.add input{grid-column:1/-1}form.add select{max-width:none;height:42px}}
+
+h2{font-family:var(--f-display);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px}
+ul.tasks{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+ul.tasks:empty{display:none}
+li.task{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px;border-top:1px solid var(--line)}
+li.task:first-child{border-top:none}
+.check{appearance:none;-webkit-appearance:none;width:28px;height:28px;margin:0;border:2px solid var(--muted);border-radius:7px;display:grid;place-items:center;cursor:pointer;background:var(--surface);transition:background .15s,border-color .15s}
+.check:checked{background:var(--accent);border-color:var(--accent)}
+.check:checked::after{content:"";width:8px;height:14px;border:solid var(--accent-ink);border-width:0 3px 3px 0;transform:translateY(-2px) rotate(45deg)}
+.body{min-width:0}
+.txt{overflow-wrap:anywhere}
+.meta{font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.chip{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:.75rem}
+.chip.w{background:var(--warn-soft);color:var(--warn)}
+li.done .txt{text-decoration:line-through;color:var(--done)}
+.acts{display:flex;gap:4px;align-items:center}
+.icon{border:none;background:none;color:var(--muted);padding:6px;border-radius:8px;font-size:.85rem;line-height:1}
+.confirm{display:flex;gap:4px}
+.confirm button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 8px;font-size:.8rem}
+.confirm .yes{color:var(--danger);border-color:var(--danger)}
+.move{border:1px solid var(--warn);color:var(--warn);background:none;border-radius:8px;padding:4px 8px;font-size:.8rem;font-weight:600;white-space:nowrap}
+.late h2{color:var(--warn)}
+.late ul.tasks{border-color:var(--warn)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:22px 16px;text-align:center;color:var(--muted)}
+.empty b{color:var(--ink);display:block;font-family:var(--f-display);font-size:1.05rem;margin-bottom:2px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;font-size:.85rem}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.status{font-size:.85rem;color:var(--muted);text-align:center}
+.status.err{color:var(--danger)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.panel p{margin:0;font-size:.88rem;color:var(--muted)}
+.panel .row{display:flex;gap:8px;flex-wrap:wrap}
+.panel input,.panel select{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px}
+
+/* entrada */
+.login{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:16px}
+.login h1{font-size:2.2rem}
+.login p{margin:0;color:var(--muted)}
+.login label{font-weight:600;font-size:.9rem}
+.login input,.login select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;font-size:1.1rem}
+.login input#codigo{text-transform:uppercase;letter-spacing:.15em;font-variant-numeric:tabular-nums}
+.login .field{display:flex;flex-direction:column;gap:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Pantalla de entrada -->
+<main class="login" id="pantallaLogin" hidden>
+  <h1>Tareas del equipo</h1>
+  <p>Escribe el código del equipo. Solo hace falta la primera vez en este móvil.</p>
+  <form id="formLogin" class="login" style="margin:0" autocomplete="off">
+    <div class="field">
+      <label for="codigo">Código del equipo</label>
+      <input id="codigo" inputmode="text" autocapitalize="characters" maxlength="12" placeholder="Ej.: ABCD2345" required>
+    </div>
+    <div class="field" id="campoNombre" hidden>
+      <label for="nombreLogin">¿Quién eres?</label>
+      <select id="nombreLogin"></select>
+      <input id="nombreNuevo" placeholder="O escribe tu nombre" maxlength="40">
+    </div>
+    <button class="btn" type="submit" id="btnEntrar">Entrar</button>
+    <div class="status err" id="errLogin" hidden></div>
+  </form>
+</main>
+
+<!-- App -->
+<div class="wrap" id="app" hidden>
+  <header>
+    <div>
+      <h1>Tareas del equipo</h1>
+      <div class="sub" id="fechaLarga"></div>
+    </div>
+    <div class="soy">
+      <span id="soyTexto"></span>
+      <button class="linkbtn" id="btnAjustes" type="button">Ajustes</button>
+    </div>
+  </header>
+
+  <section class="panel" id="panelAjustes" hidden>
+    <div class="row">
+      <label for="yo" style="align-self:center;font-weight:600">Soy</label>
+      <select id="yo"></select>
+    </div>
+    <p>Nombres del equipo, separados por comas. Se comparten con todos.</p>
+    <div class="row">
+      <input id="nombres" placeholder="Ej.: Nando, Laura, Marc" autocomplete="off">
+      <button class="btn" id="guardarEquipo" type="button">Guardar</button>
+    </div>
+    <div class="row">
+      <button class="btn sec" id="btnProbar" type="button">Enviar aviso de prueba a este móvil</button>
+      <button class="btn sec" id="btnSalir" type="button">Salir</button>
+    </div>
+  </section>
+
+  <section class="aviso" id="avisoPush" hidden></section>
+
+  <nav class="days" aria-label="Días">
+    <button class="nav" id="prev" type="button" aria-label="Semana anterior">‹</button>
+    <div class="strip" id="strip"></div>
+    <button class="nav" id="next" type="button" aria-label="Semana siguiente">›</button>
+  </nav>
+
+  <div class="progress"><div class="bar"><i id="barra"></i></div><span class="count" id="cuenta">0 de 0 hechas</span></div>
+
+  <form class="add" id="form" autocomplete="off">
+    <input id="nueva" placeholder="Nueva tarea para este día…" maxlength="300" aria-label="Nueva tarea">
+    <select id="asignar" aria-label="Asignar a"><option value="">Cualquiera</option></select>
+    <button type="submit">Añadir</button>
+  </form>
+
+  <div class="filters" role="group" aria-label="Filtrar">
+    <button type="button" data-f="todas" aria-pressed="true">Todas</button>
+    <button type="button" data-f="pend" aria-pressed="false">Por hacer</button>
+    <button type="button" data-f="mias" aria-pressed="false">Mías</button>
+  </div>
+
+  <section>
+    <ul class="tasks" id="lista"></ul>
+    <div class="empty" id="vacio"><b>No hay tareas para este día</b>Escribe arriba la primera y pulsa Añadir.</div>
+  </section>
+
+  <section class="late" id="atrasadas" hidden>
+    <h2 id="tituloAtr">Sin terminar de días anteriores</h2>
+    <ul class="tasks" id="listaAtr"></ul>
+  </section>
+
+  <div class="status" id="estado" hidden></div>
+</div>
+
+<script>
+(function(){
+  const SB_URL="https://qgdzdbjbapewkrewgpld.supabase.co";
+  const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnZHpkYmpiYXBld2tyZXdncGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMjI3MjUsImV4cCI6MjEwMDU5ODcyNX0.4OrxOCWbYAeMr2Bc8h4hCrLxoVyie6UNmkf7f2qxIaY";
+
+  const $=id=>document.getElementById(id);
+  const ls={get(k){try{return localStorage.getItem(k)||""}catch(e){return ""}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+  const DOW=["dom","lun","mar","mié","jue","vie","sáb"];
+  const pad=n=>String(n).padStart(2,"0");
+  const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+  const hoy=()=>ymd(new Date());
+  const hora=ts=>{const d=new Date(ts);return pad(d.getHours())+":"+pad(d.getMinutes())};
+  const masDias=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)};
+  const lunes=s=>{const d=parse(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return ymd(d)};
+
+  let codigo=ls.get("tareas.codigo"), yo=ls.get("tareas.yo"), dispositivo=ls.get("tareas.dispositivo");
+  if(!dispositivo){dispositivo="d-"+Math.random().toString(36).slice(2)+Date.now().toString(36);ls.set("tareas.dispositivo",dispositivo)}
+  let sel=hoy(), filtro="todas", tasks=[], equipo=[], vapid="", confirmando=null, cargando=false;
+  const q=new URLSearchParams(location.search).get("dia");
+  if(q&&/^\d{4}-\d{2}-\d{2}$/.test(q))sel=q;
+
+  async function rpc(fn,args){
+    const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+SB_KEY},body:JSON.stringify(args)});
+    const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){}
+    if(!r.ok){const e=new Error((j&&j.message)||("HTTP "+r.status));e.codigo=(j&&j.message)==="codigo_incorrecto";throw e}
+    return j;
+  }
+  function setEstado(t,err){const e=$("estado");e.textContent=t||"";e.className="status"+(err?" err":"");e.hidden=!t}
+
+  /* ---------- entrada ---------- */
+  function mostrarLogin(){ $("pantallaLogin").hidden=false; $("app").hidden=true; $("codigo").value=codigo||""; }
+  $("formLogin").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const c=$("codigo").value.trim().toUpperCase(); const err=$("errLogin"); err.hidden=true;
+    if(!c)return;
+    $("btnEntrar").disabled=true;
+    try{
+      const info=await rpc("tareas_check",{p_codigo:c});
+      equipo=(info&&info.equipo)||[]; vapid=(info&&info.vapid_public)||"";
+      if($("campoNombre").hidden){
+        // segundo paso: elegir nombre
+        codigo=c; ls.set("tareas.codigo",c);
+        const s=$("nombreLogin"); s.innerHTML='<option value="">— elegir —</option>'+equipo.map(n=>'<option></option>').join("");
+        [...s.options].slice(1).forEach((o,i)=>{o.value=equipo[i];o.textContent=equipo[i]});
+        $("campoNombre").hidden=false; $("btnEntrar").textContent="Continuar";
+        if(yo){s.value=yo}
+      }else{
+        let n=$("nombreNuevo").value.trim()||$("nombreLogin").value;
+        if(!n){err.textContent="Elige tu nombre o escríbelo.";err.hidden=false;return}
+        yo=n; ls.set("tareas.yo",n);
+        if(!equipo.includes(n)){equipo=[...equipo,n];try{await rpc("tareas_set_equipo",{p_codigo:codigo,p_nombres:equipo})}catch(_){}}
+        arrancar();
+      }
+    }catch(ex){
+      err.textContent=ex.codigo?"El código no es correcto. Revísalo y vuelve a intentarlo.":"No hay conexión. Comprueba internet y vuelve a intentarlo.";
+      err.hidden=false;
+    }finally{$("btnEntrar").disabled=false}
+  });
+
+  /* ---------- avisos push ---------- */
+  const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const instalada=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const soportaPush="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+  let swReg=null;
+
+  function b64ToU8(b){const p="=".repeat((4-b.length%4)%4);const s=atob((b+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from([...s].map(c=>c.charCodeAt(0)))}
+
+  async function pintarAviso(){
+    const box=$("avisoPush"); box.className="aviso"; box.innerHTML=""; box.hidden=false;
+    const p=t=>{const e=document.createElement("p");e.innerHTML=t;box.appendChild(e);return e};
+    if(esIOS&&!instalada){
+      p("<b>Para recibir avisos en el iPhone</b>, primero añade esta app a la pantalla de inicio:");
+      const ol=document.createElement("ol");ol.innerHTML="<li>Abre esta página en <b>Safari</b>.</li><li>Pulsa el botón <b>Compartir</b> (cuadrado con flecha hacia arriba).</li><li>Elige <b>Añadir a pantalla de inicio</b> y pulsa <b>Añadir</b>.</li><li>Cierra Safari y abre <b>Tareas</b> desde el icono nuevo.</li>";box.appendChild(ol);
+      return;
+    }
+    if(!soportaPush){p("Este navegador no admite avisos. En Android usa <b>Chrome</b>; en iPhone, Safari con iOS 16.4 o posterior.");return}
+    if(Notification.permission==="denied"){p("Los avisos están <b>bloqueados</b> para esta app. Actívalos en los ajustes del móvil: Ajustes → Notificaciones → Tareas (iPhone) o Ajustes del sitio en Chrome (Android).");return}
+    let sub=null; try{swReg=swReg||await navigator.serviceWorker.ready; sub=await swReg.pushManager.getSubscription()}catch(e){}
+    if(sub&&Notification.permission==="granted"){box.hidden=true;return}
+    p("<b>Activa los avisos</b> para que te suene cada vez que alguien añada una tarea, aunque tengas el móvil bloqueado.");
+    const row=document.createElement("div");row.className="row";
+    const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="Activar avisos";
+    b.onclick=activarPush;row.appendChild(b);box.appendChild(row);
+  }
+
+  async function activarPush(){
+    try{
+      const perm=await Notification.requestPermission();
+      if(perm!=="granted"){pintarAviso();return}
+      swReg=swReg||await navigator.serviceWorker.ready;
+      if(!vapid){const info=await rpc("tareas_check",{p_codigo:codigo});vapid=info.vapid_public}
+      let sub=await swReg.pushManager.getSubscription();
+      if(!sub)sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(vapid)});
+      const j=sub.toJSON();
+      await rpc("tareas_subscribe",{p_codigo:codigo,p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_dispositivo:dispositivo,p_nombre:yo||""});
+      const box=$("avisoPush");box.className="aviso ok";box.innerHTML="<p><b>Avisos activados.</b> Te sonará cuando otra persona añada una tarea.</p>";
+      setTimeout(()=>{box.hidden=true},6000);
+    }catch(e){
+      const box=$("avisoPush");box.hidden=false;box.innerHTML="<p>No se han podido activar los avisos. Cierra la app, vuelve a abrirla e inténtalo otra vez.</p>";
+    }
+  }
+
+  $("btnProbar").onclick=async()=>{
+    try{
+      swReg=swReg||await navigator.serviceWorker.ready;
+      if(Notification.permission!=="granted"){setEstado("Primero activa los avisos.",true);return}
+      await swReg.showNotification("Aviso de prueba",{body:"Así te llegarán las tareas nuevas.",icon:"icon-192.png",badge:"badge-96.png",tag:"prueba"});
+    }catch(e){setEstado("Este móvil no puede mostrar avisos.",true)}
+  };
+
+  /* ---------- datos ---------- */
+  async function cargar(){
+    if(cargando)return; cargando=true;
+    const l=lunes(sel), h=hoy();
+    const desde=l<h?l:h, fin=masDias(l,6), hasta=fin>h?fin:h;
+    try{
+      const rows=await rpc("tareas_list",{p_codigo:codigo,p_desde:desde,p_hasta:hasta});
+      tasks=(rows||[]).map(x=>({id:x.id,texto:x.texto,fecha:x.fecha,para:x.para||"",hecha:!!x.hecha,hechaPor:x.hecha_por||"",hechaEn:x.hecha_en,creada:x.creada,creadaPor:x.creada_por||""}));
+      setEstado("");
+      render();
+    }catch(e){
+      if(e.codigo){ls.del("tareas.codigo");codigo="";mostrarLogin();return}
+      setEstado("Sin conexión. Se actualizará cuando vuelva internet.",true);
+    }finally{cargando=false}
+  }
+  async function accion(fn){
+    try{await fn();await cargar()}
+    catch(e){setEstado("No se ha podido guardar. Revisa la conexión y vuelve a intentarlo.",true)}
+  }
+
+  /* ---------- pintar ---------- */
+  function renderStrip(){
+    const l=lunes(sel), h=hoy(), cont=$("strip"); cont.innerHTML="";
+    for(let i=0;i<7;i++){
+      const k=masDias(l,i), d=parse(k);
+      const del=tasks.filter(t=>t.fecha===k), pend=del.filter(t=>!t.hecha).length;
+      const b=document.createElement("button");b.type="button";
+      b.className="day"+(k===h?" today":"")+(k===sel?" sel":"");
+      b.setAttribute("aria-label",d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"})+(pend?", "+pend+" por hacer":""));
+      b.innerHTML='<span class="dow">'+DOW[d.getDay()]+'</span><span class="num">'+d.getDate()+'</span><span class="dot'+(del.length?(pend?" p":" ok"):"")+'"></span>';
+      b.onclick=()=>{sel=k;confirmando=null;render()};
+      cont.appendChild(b);
+    }
+    $("fechaLarga").textContent=parse(sel).toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"})+(sel===h?" · hoy":"");
+  }
+  function opciones(selEl,primera,valor){
+    selEl.innerHTML="";const o=document.createElement("option");o.value="";o.textContent=primera;selEl.appendChild(o);
+    const lista=[...equipo];if(valor&&!lista.includes(valor))lista.push(valor);
+    lista.forEach(n=>{const x=document.createElement("option");x.value=n;x.textContent=n;selEl.appendChild(x)});
+    selEl.value=valor||"";
+  }
+  function item(t,atrasada){
+    const li=document.createElement("li");li.className="task"+(t.hecha?" done":"");
+    const cb=document.createElement("input");cb.type="checkbox";cb.className="check";cb.checked=t.hecha;cb.id="c-"+t.id;
+    cb.setAttribute("aria-label",(t.hecha?"Desmarcar: ":"Marcar como hecha: ")+t.texto);
+    cb.onchange=()=>{t.hecha=cb.checked;render();accion(()=>rpc("tareas_set_hecha",{p_codigo:codigo,p_id:t.id,p_hecha:cb.checked,p_por:yo||""}))};
+    const body=document.createElement("label");body.className="body";body.htmlFor=cb.id;
+    const tx=document.createElement("div");tx.className="txt";tx.textContent=t.texto;body.appendChild(tx);
+    const meta=document.createElement("div");meta.className="meta";
+    if(t.para){const c=document.createElement("span");c.className="chip";c.textContent=t.para;meta.appendChild(c)}
+    if(atrasada){const c=document.createElement("span");c.className="chip w";c.textContent=parse(t.fecha).toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"});meta.appendChild(c)}
+    if(t.hecha){const s=document.createElement("span");s.textContent="Hecha"+(t.hechaPor?" por "+t.hechaPor:"")+(t.hechaEn?" a las "+hora(t.hechaEn):"");meta.appendChild(s)}
+    else if(t.creadaPor){const s=document.createElement("span");s.textContent="Añadida por "+t.creadaPor;meta.appendChild(s)}
+    if(meta.childNodes.length)body.appendChild(meta);
+    const acts=document.createElement("div");acts.className="acts";
+    if(atrasada){const m=document.createElement("button");m.type="button";m.className="move";m.textContent="Pasar a hoy";m.onclick=()=>accion(()=>rpc("tareas_mover",{p_codigo:codigo,p_id:t.id,p_fecha:hoy()}));acts.appendChild(m)}
+    if(confirmando===t.id){
+      const c=document.createElement("div");c.className="confirm";
+      const y=document.createElement("button");y.type="button";y.className="yes";y.textContent="Borrar";
+      y.onclick=()=>{confirmando=null;accion(()=>rpc("tareas_borrar",{p_codigo:codigo,p_id:t.id}))};
+      const n=document.createElement("button");n.type="button";n.textContent="No";n.onclick=()=>{confirmando=null;render()};
+      c.append(y,n);acts.appendChild(c);
+    }else{
+      const d=document.createElement("button");d.type="button";d.className="icon";d.textContent="✕";d.setAttribute("aria-label","Borrar "+t.texto);
+      d.onclick=()=>{confirmando=t.id;render()};acts.appendChild(d);
+    }
+    li.append(cb,body,acts);return li;
+  }
+  const aplicaFiltro=l=>filtro==="pend"?l.filter(t=>!t.hecha):filtro==="mias"?l.filter(t=>yo&&(t.para===yo||!t.para)):l;
+  function render(){
+    renderStrip();
+    const delDia=tasks.filter(t=>t.fecha===sel).sort((a,b)=>(a.hecha-b.hecha)||(a.creada<b.creada?-1:1));
+    const hechas=delDia.filter(t=>t.hecha).length;
+    $("cuenta").textContent=hechas+" de "+delDia.length+" hechas";
+    $("barra").style.width=delDia.length?(hechas/delDia.length*100)+"%":"0";
+    const vis=aplicaFiltro(delDia), ul=$("lista");ul.innerHTML="";
+    vis.forEach(t=>ul.appendChild(item(t,false)));
+    const v=$("vacio");v.hidden=vis.length>0;
+    v.innerHTML=delDia.length?"<b>Nada con este filtro</b>Cambia a «Todas» para ver el resto.":"<b>No hay tareas para este día</b>Escribe arriba la primera y pulsa Añadir.";
+    const atr=sel===hoy()?aplicaFiltro(tasks.filter(t=>!t.hecha&&t.fecha<sel)).sort((a,b)=>a.fecha<b.fecha?-1:1):[];
+    $("atrasadas").hidden=!atr.length;$("tituloAtr").textContent="Sin terminar de días anteriores ("+atr.length+")";
+    const ua=$("listaAtr");ua.innerHTML="";atr.forEach(t=>ua.appendChild(item(t,true)));
+    document.querySelectorAll(".filters button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.f===filtro)));
+    $("soyTexto").textContent=yo?"Soy "+yo:"";
+  }
+
+  /* ---------- eventos ---------- */
+  $("form").addEventListener("submit",async e=>{
+    e.preventDefault();const inp=$("nueva"),txt=inp.value.trim();if(!txt)return;
+    const para=$("asignar").value;inp.value="";inp.focus();
+    try{
+      const r=await rpc("tareas_add",{p_codigo:codigo,p_texto:txt,p_fecha:sel,p_para:para,p_por:yo||"",p_dispositivo:dispositivo});
+      await cargar();
+      const id=r&&(r.id||(Array.isArray(r)&&r[0]&&r[0].id));
+      if(id)fetch(SB_URL+"/functions/v1/tareas-push",{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+SB_KEY},body:JSON.stringify({codigo,id})}).catch(()=>{});
+    }catch(ex){inp.value=txt;setEstado("No se ha podido añadir. Revisa la conexión y vuelve a intentarlo.",true)}
+  });
+  $("prev").onclick=()=>{sel=masDias(sel,-7);render();cargar()};
+  $("next").onclick=()=>{sel=masDias(sel,7);render();cargar()};
+  document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{filtro=b.dataset.f;render()});
+  $("btnAjustes").onclick=()=>{const p=$("panelAjustes");p.hidden=!p.hidden;if(!p.hidden){$("nombres").value=equipo.join(", ");opciones($("yo"),"— elegir —",yo)}};
+  $("yo").onchange=e=>{yo=e.target.value;ls.set("tareas.yo",yo);render()};
+  $("guardarEquipo").onclick=async()=>{
+    const lista=[...new Set($("nombres").value.split(",").map(s=>s.trim()).filter(Boolean))].slice(0,20);
+    try{await rpc("tareas_set_equipo",{p_codigo:codigo,p_nombres:lista});equipo=lista;opciones($("asignar"),"Cualquiera","");opciones($("yo"),"— elegir —",yo);$("panelAjustes").hidden=true}
+    catch(e){setEstado("No se ha podido guardar el equipo.",true)}
+  };
+  $("btnSalir").onclick=()=>{ls.del("tareas.codigo");codigo="";location.reload()};
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{});
+    navigator.serviceWorker.addEventListener("message",e=>{
+      if(e.data&&e.data.tipo==="tarea-nueva")cargar();
+      if(e.data&&e.data.tipo==="abrir-dia"&&e.data.fecha){sel=e.data.fecha;render();cargar()}
+    });
+  }
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&codigo)cargar()});
+  setInterval(()=>{if(!document.hidden&&codigo)cargar()},20000);
+  let ultimoHoy=hoy();
+  setInterval(()=>{const h=hoy();if(h!==ultimoHoy){if(sel===ultimoHoy)sel=h;ultimoHoy=h;render();cargar()}},60000);
+
+  async function arrancar(){
+    $("pantallaLogin").hidden=true;$("app").hidden=false;
+    render();
+    try{const info=await rpc("tareas_check",{p_codigo:codigo});equipo=(info&&info.equipo)||[];vapid=(info&&info.vapid_public)||""}
+    catch(e){if(e.codigo){ls.del("tareas.codigo");codigo="";mostrarLogin();return}}
+    opciones($("asignar"),"Cualquiera","");
+    await cargar();
+    pintarAviso();
+  }
+  if(codigo&&yo)arrancar();else mostrarLogin();
+})();
+</script>
+</body>
+</html>
